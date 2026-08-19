@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TG WS Proxy - Надёжный прокси для Telegram</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- ФОН СО ЗВЕЗДАМИ -->
+    <canvas id="starfield" class="starfield-canvas"></canvas>
+
+    <!-- Custom Cursor Pointer -->
+    <div class="pointer"></div>
+
+    <!-- TOP & BOTTOM BARS -->
+    <div class="top-bar"></div>
+    <div class="bottom-bar"></div>
+
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+        <div class="animated-particles"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav container">
+            <div class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="32" height="32" class="logo-emoji">
+                  <circle cx="256" cy="256" r="256" fill="#000000"/>
+                  <path d="M 220 350 L 110 260 L 380 140 L 220 350 Z M 220 350 L 270 280" fill="#ffffff" stroke="#000000" stroke-width="12" stroke-linejoin="round"/>
+                </svg>
+                <span class="logo-text">TG WS Proxy</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#features">Возможности</a></li>
+                <li><a href="#why">Зачем</a></li>
+                <li><a href="#how">Как</a></li>
+                <li><a href="#download">Скачать</a></li>
+            </ul>
+            <div class="nav-buttons">
+                <a href="#download" class="btn btn-primary">Скачать</a>
+                <button class="btn btn-secondary support-btn" onclick="openSupportModal()">Поддержка</button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="gradient-text">Погрузитесь</span><br>
+                    в Свободный<br>
+                    Интернет
+                </h1>
+                
+                <p class="hero-description">
+                    Надёжный WebSocket прокси для Telegram. Быстро, безопасно, легко. 
+                    Подключитесь за одну минуту.
+                </p>
+                
+                <div class="hero-buttons">
+                    <a href="#download" class="btn btn-premium">Скачать сейчас</a>
+                    <a href="#how" class="btn btn-secondary">Как работает</a>
+                </div>
+            </div>
+
+            <!-- Hero Visual - Windows Terminal -->
+            <div class="hero-visual">
+                <div class="win-terminal-container">
+                    <!-- Windows Title Bar -->
+                    <div class="win-terminal-header">
+                        <div class="win-terminal-tabs">
+                            <div class="win-tab">
+                                <span class="win-tab-icon"></span>
+                                PowerShell — TG-WS-PROXY
+                            </div>
+                        </div>
+                        <div class="win-controls">
+                            <div class="win-btn">&#xE921; ─ </div>
+                            <div class="win-btn">&#xE922; ▢ </div>
+                            <div class="win-btn win-btn-close">✕</div>
+                        </div>
+                    </div>
+                    <!-- Terminal Content Area -->
+                    <div class="win-terminal-body">
+                        <div>
+                            <span class="win-prompt">PS C:\TG-WS-Proxy&gt;</span> 
+                            <span class="win-command">Get-ProxyStatus -Server "Global"</span>
+                        </div>
+                        <div class="win-output-line">Initializing WebSocket Engine...</div>
+                        <div class="win-output-line">[<span class="win-success">✓</span>] Protocol: WebSocket v1.3</div>
+                        <div class="win-output-line">[<span class="win-success">✓</span>] Response Time: <span class="win-highlight">15ms</span></div>
+                        <div class="win-output-line">[<span class="win-success">✓</span>] Uptime: <span class="win-highlight">99.9%</span></div>
+                        <br>
+                        <div>
+                            <span class="win-prompt">PS C:\TG-WS-Proxy&gt;</span> 
+                            <span id="win-typewriter" class="win-command"></span><span class="win-cursor"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- INTRODUCTION SECTION -->
+    <section class="introduction" id="features">
+        <div class="container intro-grid">
+            <div class="intro-image">
+                <div class="widgets-container">
+                    <div class="widget-card ping-widget">
+                        <div class="big-value-row">
+                            <span class="big-value" id="w-ping">--</span>
+                            <span class="unit">ms</span>
+                        </div>
+                        <div class="widget-label">LATENCY TO PROXY</div>
+                        <button class="action-btn" id="btn-ping-intro" onclick="WIDGETS.triggerSync()">CHECK CONNECTION</button>
+                    </div>
+
+                    <div class="widget-card users-widget">
+                        <div class="widget-header">
+                            <span class="header-label">ONLINE USERS</span>
+                            <span class="pulse-dot"></span>
+                        </div>
+                        <div class="big-value" id="w-users">--</div>
+                        <div class="widget-footer">Active Sessions • Updated every 10s</div>
+                    </div>
+                </div>
+            </div>
+            <div class="intro-content">
+                <div class="section-badge">ВВЕДЕНИЕ</div>
+                <h2 class="section-title">В ТГ ВСЕ ПРОСТО</h2>
+                <p class="section-text">
+                    Скачайте приложение, запустите его от администратора, и вуаля — 
+                    вы уже в Telegram без ограничений. Никаких сложных настроек, 
+                    никаких конфигурационных файлов. Просто работает.
+                </p>
+                <a href="#download" class="btn btn-secondary" onclick="document.querySelector('#download')?.scrollIntoView({behavior:'smooth', block:'start'}); return false;">Скачать прокси →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section class="about" id="why">
+        <div class="container about-grid">
+            <div class="about-content">
+                <div class="section-badge">О ПРОЕКТЕ</div>
+                <h2 class="section-title">Почему TG-WS-PROXY?</h2>
+                <p class="section-text">
+                    Потому что это надёжный, быстрый и простой способ получить доступ к Telegram 
+                    где угодно. Мы используем WebSocket протокол, который обходит большинство 
+                    блокировок и DPI-фильтров. Все данные шифруются, логи не ведутся — 
+                    вашу конфиденциальность никто не нарушает.
+                </p>
+                <a href="#why-choose" class="btn btn-secondary" onclick="document.querySelector('#why-choose')?.scrollIntoView({behavior:'smooth', block:'start'}); return false;">Подробнее →</a>
+            </div>
+            <div class="about-image">
+                <div class="widgets-container">
+                    <!-- 1. Статус шифрования -->
+                    <div class="widget-card static-widget">
+                        <div class="shield-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                        </div>
+                        <div class="static-title">ENCRYPTED</div>
+                        <div class="static-desc">TLS 1.3 • AES-256-GCM</div>
+                        <div class="static-line"></div>
+                    </div>
+
+                    <!-- 2. Онлайн пользователи -->
+                    <div class="widget-card users-widget">
+                        <div class="widget-header">
+                            <span class="header-label">ONLINE USERS</span>
+                            <span class="pulse-dot"></span>
+                        </div>
+                        <div class="big-value" id="w-users-about">--</div>
+                        <div class="widget-footer">Active Sessions • Updated every 10s</div>
+                    </div>
+
+                    <!-- 3. Активные подключения (Синхронизирован) -->
+                    <div class="widget-card conn-widget">
+                        <div class="widget-header">
+                            <span class="header-label">ACTIVE CONNECTIONS</span>
+                            <span class="status-dot"></span>
+                        </div>
+                        <div class="big-value-row">
+                            <span class="big-value" id="w-slots">--</span>
+                            <span class="unit">/ 658</span>
+                        </div>
+                        <div class="widget-footer">Occupied Nodes • Live Load</div>
+                        <div class="capacity-bar"><div class="capacity-fill" id="w-fill"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WHY BUILD SECTION - 4 Cards -->
+    <section class="why-section" id="why-choose">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-badge">ПРЕИМУЩЕСТВА</div>
+                <h2 class="section-title">Почему выбирают нас</h2>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="card-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="48" height="48">
+                            <polygon points="375,31 205,31 95,275 212,275 150,481 420,181 303,181" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <h3>Молниеносная Скорость</h3>
+                    <p>15ms задержка, нет потери пакетов. Ваш трафик летит на максимальной скорости.</p>
+                    <a href="#" class="card-link">Узнать больше →</a>
+                </div>
+
+                <div class="feature-card">
+                    <div class="card-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="48" height="48">
+                            <path d="M256 32L80 112V240C80 368 256 480 256 480C256 480 432 368 432 240V112L256 32Z" fill="currentColor" stroke="currentColor" stroke-width="0"/>
+                        </svg>
+                    </div>
+                    <h3>Полная Безопасность</h3>
+                    <p>AES-256 шифрование, TLS 1.3, no-logs политика. Ваши данные в безопасности.</p>
+                    <a href="#" class="card-link">Узнать больше →</a>
+                </div>
+
+                <div class="feature-card">
+                    <div class="card-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="48" height="48">
+                            <circle cx="256" cy="256" r="224" fill="none" stroke="currentColor" stroke-width="32"/>
+                            <path d="M256 32C340 80 380 160 380 256C380 352 340 432 256 480C172 432 132 352 132 256C132 160 172 80 256 32Z" fill="none" stroke="currentColor" stroke-width="28" stroke-linejoin="round"/>
+                            <path d="M120 256H392M256 40V472" stroke="currentColor" stroke-width="28" stroke-linecap="round"/>
+                            <path d="M160 100Q200 120 256 120Q312 120 352 100" fill="none" stroke="currentColor" stroke-width="24" stroke-linecap="round"/>
+                            <path d="M160 412Q200 392 256 392Q312 392 352 412" fill="none" stroke="currentColor" stroke-width="24" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h3>Глобальная Сеть</h3>
+                    <p>50+ серверов по всему миру. Автоматический выбор оптимального маршрута.</p>
+                    <a href="#" class="card-link">Узнать больше →</a>
+                </div>
+
+                <div class="feature-card">
+                    <div class="card-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="48" height="48">
+                            <path d="M256 32C141 32 48 125 48 240C48 355 141 448 256 448C371 448 464 355 464 240C464 125 371 32 256 32M256 80C220 80 192 108 192 144C192 180 220 208 256 208C292 208 320 180 320 144C320 108 292 80 256 80M128 320C96 320 70 346 70 378C70 410 96 436 128 436C160 436 186 410 186 378C186 346 160 320 128 320M384 320C352 320 326 346 326 378C326 410 352 436 384 436C416 436 442 410 442 378C442 346 416 320 384 320Z" fill="currentColor"/>
+                            <path d="M180 260L240 320L340 220" stroke="white" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        </svg>
+                    </div>
+                    <h3>99.9% Uptime</h3>
+                    <p>Гарантированная доступность 24/7. Техподдержка всегда на связи.</p>
+                    <a href="#" class="card-link">Узнать больше →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TECHNOLOGIES SECTION -->
+    <section class="technologies">
+        <div class="container">
+            <h2 class="section-title">ТЕХНОЛОГИИ</h2>
+            <p class="tech-subtitle">На чём построен TG-WS-PROXY</p>
+            
+            <div class="tech-slider">
+                <div class="tech-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="32" height="32">
+                        <path d="M256 80C268 80 280 72 285 60L305 20C310 8 322 0 334 0C350 0 364 14 364 30C364 40 358 48 350 52L330 72C340 90 348 110 352 132L374 132C390 132 404 146 404 162C404 178 390 192 374 192L352 192C348 214 340 234 330 252L350 272C358 276 364 284 364 294C364 310 350 324 334 324C322 324 310 316 305 304L285 264C280 252 268 244 256 244C244 244 232 252 227 264L207 304C202 316 190 324 178 324C162 324 148 310 148 294C148 284 154 276 162 272L182 252C172 234 164 214 160 192L138 192C122 192 108 178 108 162C108 146 122 132 138 132L160 132C164 110 172 90 182 72L162 52C154 48 148 40 148 30C148 14 162 0 178 0C190 0 202 8 207 20L227 60C232 72 244 80 256 80M256 140C217 140 185 172 185 212C185 251 217 284 256 284C296 284 328 251 328 212C328 172 296 140 256 140Z" fill="currentColor"/>
+                    </svg>
+                    <span>Node.js</span>
+                </div>
+                <div class="tech-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="32" height="32">
+                        <circle cx="256" cy="280" r="160" fill="currentColor"/>
+                        <circle cx="256" cy="280" r="140" fill="white"/>
+                        <path d="M256 140V420M196 280H316M220 160Q256 180 292 160M220 400Q256 380 292 400" stroke="currentColor" stroke-width="24" fill="none" stroke-linecap="round"/>
+                        <path d="M140 240Q160 260 140 300Q160 320 140 360" stroke="currentColor" stroke-width="24" fill="none" stroke-linecap="round"/>
+                        <path d="M372 240Q352 260 372 300Q352 320 372 360" stroke="currentColor" stroke-width="24" fill="none" stroke-linecap="round"/>
+                        <ellipse cx="256" cy="200" rx="80" ry="40" fill="none" stroke="currentColor" stroke-width="20"/>
+                        <ellipse cx="256" cy="280" rx="100" ry="50" fill="none" stroke="currentColor" stroke-width="20"/>
+                        <ellipse cx="256" cy="360" rx="80" ry="40" fill="none" stroke="currentColor" stroke-width="20"/>
+                    </svg>
+                    <span>WebSocket</span>
+                </div>
+                <div class="tech-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="32" height="32">
+                        <path d="M80 120C80 80 120 40 160 40C180 40 200 50 210 65L240 30C250 15 265 10 280 15L300 50C310 40 325 35 340 40C360 45 375 60 375 80L375 180C375 200 365 220 350 230L480 250C490 250 500 255 500 265C500 275 490 280 480 280L380 280C370 285 360 290 350 295L350 340C350 360 340 375 325 380L300 360C290 355 280 355 270 360L260 400C255 415 245 425 230 420L210 370C200 375 190 380 180 380L120 360C100 355 85 340 85 320L85 180C85 160 85 140 80 120Z" fill="currentColor"/>
+                        <circle cx="420" cy="280" r="20" fill="white"/>
+                        <path d="M330 300C320 310 310 320 310 340C310 360 325 375 340 375L380 350C385 345 390 340 390 330" fill="none" stroke="white" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Docker</span>
+                </div>
+                <div class="tech-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="32" height="32">
+                        <rect x="40" y="40" width="432" height="280" rx="32" fill="currentColor"/>
+                        <rect x="80" y="80" width="352" height="200" rx="16" fill="white"/>
+                        <rect x="160" y="340" width="192" height="40" rx="16" fill="currentColor"/>
+                        <rect x="200" y="380" width="112" height="60" rx="16" fill="currentColor"/>
+                    </svg>
+                    <span>Linux</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW WE BUILD SECTION - 4 Steps -->
+    <section class="how-section" id="how">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-badge">ПРОЦЕСС</div>
+                <h2 class="section-title">Как это работает</h2>
+            </div>
+
+            <div class="process-steps">
+                <div class="step">
+                    <div class="step-number">01</div>
+                    <h3>Скачивание</h3>
+                    <p>Загрузите приложение для Windows 10/11</p>
+                </div>
+
+                <div class="step-arrow">→</div>
+
+                <div class="step">
+                    <div class="step-number">02</div>
+                    <h3>Запуск</h3>
+                    <p>Запустите от администратора</p>
+                </div>
+
+                <div class="step-arrow">→</div>
+
+                <div class="step">
+                    <div class="step-number">03</div>
+                    <h3>Подключение</h3>
+                    <p>Откройте Telegram</p>
+                </div>
+
+                <div class="step-arrow">→</div>
+
+                <div class="step">
+                    <div class="step-number">04</div>
+                    <h3>Свобода</h3>
+                    <p>Пользуйтесь без ограничений</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TELEGRAM STYLE CTA SECTION -->
+    <section class="telegram-cta">
+        <div class="container telegram-cta-container">
+            <div class="telegram-window">
+                <div class="telegram-header">
+                    <div class="header-title">TG WS Proxy</div>
+                    <div class="header-status">в сети</div>
+                </div>
+                <div class="telegram-chat">
+                    <div class="message message-in">
+                        <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                            <path d="M120 280C110 280 100 290 100 300C100 310 110 320 120 320L160 320C170 320 180 310 180 300C180 290 170 280 160 280L120 280M200 120C190 120 180 130 180 140C180 200 180 240 180 300C180 310 190 320 200 320C210 320 220 310 220 300L220 140C220 130 210 120 200 120M280 80C270 80 260 90 260 100C260 200 260 240 260 300C260 310 270 320 280 320C290 320 300 310 300 300L300 100C300 90 290 80 280 80M360 100C350 100 340 110 340 120C340 200 340 240 340 300C340 310 350 320 360 320C370 320 380 310 380 300L380 120C380 110 370 100 360 100M420 160C410 160 400 170 400 180C400 220 400 240 400 300C400 310 410 320 420 320C430 320 440 310 440 300L440 180C440 170 430 160 420 160" fill="none" stroke="currentColor" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg> Привет!</span>
+                    </div>
+                    <div class="message message-in animate-msg-1">
+                        <span>Добро пожаловать в TG WS Proxy</span>
+                    </div>
+                    <div class="message message-in animate-msg-2">
+                        <span>Это надёжный прокси для Telegram</span>
+                    </div>
+                    <div class="message message-in animate-msg-3">
+                        <span>Быстро <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" style="display: inline-block; vertical-align: middle; margin: 0 4px;">
+                            <polygon points="375,31 205,31 95,275 212,275 150,481 420,181 303,181" fill="currentColor"/>
+                        </svg> Безопасно <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" style="display: inline-block; vertical-align: middle; margin: 0 4px;">
+                            <path d="M256 32L80 112V240C80 368 256 480 256 480C256 480 432 368 432 240V112L256 32Z" fill="currentColor" stroke="currentColor" stroke-width="0"/>
+                        </svg> Легко <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" style="display: inline-block; vertical-align: middle; margin: 0 4px;">
+                            <path d="M256 32C141 32 48 125 48 240C48 355 141 448 256 448C371 448 464 355 464 240C464 125 371 32 256 32M256 80C220 80 192 108 192 144C192 180 220 208 256 208C292 208 320 180 320 144C320 108 292 80 256 80M128 320C96 320 70 346 70 378C70 410 96 436 128 436C160 436 186 410 186 378C186 346 160 320 128 320M384 320C352 320 326 346 326 378C326 410 352 436 384 436C416 436 442 410 442 378C442 346 416 320 384 320Z" fill="currentColor"/>
+                            <path d="M180 260L240 320L340 220" stroke="white" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        </svg></span>
+                    </div>
+                    <div class="message message-out animate-msg-4">
+                        <span>Как это работает?</span>
+                    </div>
+                    <div class="message message-in animate-msg-5">
+                        <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                            <rect x="60" y="40" width="392" height="432" rx="80" fill="currentColor"/>
+                            <text x="256" y="380" font-size="280" font-weight="bold" text-anchor="middle" fill="white">1</text>
+                        </svg> Скачай приложение</span>
+                    </div>
+                    <div class="message message-in animate-msg-6">
+                        <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                            <rect x="60" y="40" width="392" height="432" rx="80" fill="currentColor"/>
+                            <text x="256" y="380" font-size="280" font-weight="bold" text-anchor="middle" fill="white">2</text>
+                        </svg> Запусти от администратора</span>
+                    </div>
+                    <div class="message message-in animate-msg-7">
+                        <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                            <rect x="60" y="40" width="392" height="432" rx="80" fill="currentColor"/>
+                            <text x="256" y="380" font-size="280" font-weight="bold" text-anchor="middle" fill="white">3</text>
+                        </svg> Открой Telegram</span>
+                    </div>
+                    <div class="message message-in animate-msg-8">
+                        <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                            <rect x="60" y="40" width="392" height="432" rx="80" fill="currentColor"/>
+                            <text x="256" y="380" font-size="280" font-weight="bold" text-anchor="middle" fill="white">4</text>
+                        </svg> Пользуйся без ограничений <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" style="display: inline-block; vertical-align: middle; margin-left: 6px;">
+                            <path d="M120 380C140 420 180 460 240 480C300 500 360 480 400 440L440 340C460 300 440 260 400 240L300 180C260 160 220 180 200 220L120 380Z" fill="currentColor"/>
+                            <circle cx="300" cy="120" r="80" fill="currentColor"/>
+                        </svg></span>
+                    </div>
+                </div>
+                <div class="telegram-input">
+                    <input type="text" placeholder="Напиши сообщение...">
+                    <button class="send-btn">➤</button>
+                </div>
+            </div>
+
+            <div class="cta-content">
+                <h2 class="cta-main-title">
+                    <span class="gradient-text-large">присоединяйся к нам</span>
+                </h2>
+                <p class="cta-description">
+                    Более 1000+ пользователей уже используют TG-WS-PROXY и довольны результатом.
+                    Присоединись и ты!
+                </p>
+                <div class="cta-stats">
+                    <div class="stat">
+                        <div class="stat-number">1000+</div>
+                        <div class="stat-label">пользователей довольны результатом</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">15ms</div>
+                        <div class="stat-label">Средняя задержка</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">99.9%</div>
+                        <div class="stat-label">Гарантированный uptime</div>
+                    </div>
+                </div>
+                <a href="#download" class="btn btn-premium btn-large">Скачать сейчас</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA SECTION -->
+    <section class="cta">
+        <div class="container">
+            <h2 class="cta-title">Готовы начать?</h2>
+            <p class="cta-subtitle">Все вопросы решены?</p>
+            <a href="#download" class="btn btn-premium btn-large">Скачать сейчас</a>
+        </div>
+    </section>
+
+    <!-- Download Section -->
+    <section class="download" id="download">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-badge">ЗАГРУЗКА</div>
+                <h2 class="section-title">Скачайте прокси для Telegram</h2>
+            </div>
+
+            <div class="download-grid">
+                <div class="download-card">
+                    <div class="download-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="48" height="48">
+                            <rect x="60" y="60" width="392" height="340" rx="48" ry="48" fill="none" stroke="currentColor" stroke-width="32"/>
+                            <polyline points="256,240 256,400" stroke="currentColor" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                            <polyline points="180,320 256,400 332,320" stroke="currentColor" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                            <line x1="100" y1="160" x2="412" y2="160" stroke="currentColor" stroke-width="32" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h3>Windows 10/11</h3>
+                    <p class="download-size">Размер: 52.2 МБ</p>
+
+                    <a href="https://github.com/tg-ws-proxy/tg-ws-proxy.github.io/releases/download/TgWsProxy/Tg-ws-proxy.exe" class="btn btn-premium btn-block">Скачать .exe</a>
+                    <p class="download-info">Windows 10 и 11 (все версии)</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2024 TG WS Proxy. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
