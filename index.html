@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TG WS Proxy - React Version</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- React CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Framer Motion CDN -->
+    <script src="https://unpkg.com/framer-motion@10/dist/framer-motion.js"></script>
+</head>
+<body>
+    <!-- Animated Background -->
+    <script src="animated-background.js"></script>
+    
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { motion } = window.Motion;
+
+        // Hero Component with animations
+        function Hero() {
+            return (
+                <motion.section 
+                    className="hero"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 1 }}
+                >
+                    <div className="container hero-container">
+                        <motion.div 
+                            className="hero-content"
+                            initial={{ x: -100, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                        >
+                            <motion.h1 
+                                className="hero-title"
+                                initial={{ y: 50, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ duration: 0.6, delay: 0.4 }}
+                            >
+                                <span className="gradient-text">Погрузитесь</span><br/>
+                                в Свободный<br/>
+                                Интернет
+                            </motion.h1>
+                            
+                            <motion.p 
+                                className="hero-description"
+                                initial={{ y: 30, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ duration: 0.6, delay: 0.6 }}
+                            >
+                                Надёжный WebSocket прокси для Telegram. Быстро, безопасно, легко. 
+                                Подключитесь за одну минуту.
+                            </motion.p>
+                            
+                            <motion.div 
+                                className="hero-buttons"
+                                initial={{ y: 30, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ duration: 0.6, delay: 0.8 }}
+                            >
+                                <motion.a 
+                                    href="#download" 
+                                    className="btn btn-premium"
+                                    whileHover={{ scale: 1.05, y: -5 }}
+                                    whileTap={{ scale: 0.95 }}
+                                >
+                                    Скачать сейчас
+                                </motion.a>
+                            </motion.div>
+                        </motion.div>
+
+                        <motion.div 
+                            className="hero-visual"
+                            initial={{ x: 100, opacity: 0, rotateY: -20 }}
+                            animate={{ x: 0, opacity: 1, rotateY: 0 }}
+                            transition={{ duration: 1, delay: 0.4 }}
+                        >
+                            <Terminal />
+                        </motion.div>
+                    </div>
+                </motion.section>
+            );
+        }
+
+        // Terminal Component
+        function Terminal() {
+            const [typing, setTyping] = useState('');
+            const commands = ['Connect', 'Initialize', 'Success'];
+            const [cmdIndex, setCmdIndex] = useState(0);
+
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setCmdIndex((prev) => (prev + 1) % commands.length);
+                }, 2000);
+                return () => clearInterval(interval);
+            }, []);
+
+            return (
+                <motion.div 
+                    className="win-terminal-container"
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ duration: 0.3 }}
+                >
+                    <div className="win-terminal-header">
+                        <div className="win-terminal-tabs">
+                            <div className="win-tab">
+                                <span className="win-tab-icon"></span>
+                                PowerShell — TG-WS-PROXY
+                            </div>
+                        </div>
+                        <div className="win-controls">
+                            <div className="win-btn">─</div>
+                            <div className="win-btn">▢</div>
+                            <div className="win-btn win-btn-close">✕</div>
+                        </div>
+                    </div>
+                    <div className="win-terminal-body">
+                        <div>
+                            <span className="win-prompt">PS C:\TG-WS-Proxy&gt;</span> 
+                            <span className="win-command">Get-ProxyStatus -Server "Global"</span>
+                        </div>
+                        <div className="win-output-line">Initializing WebSocket Engine...</div>
+                        <div className="win-output-line">[<span className="win-success">✓</span>] Protocol: WebSocket v1.3</div>
+                        <div className="win-output-line">[<span className="win-success">✓</span>] Response Time: <span className="win-highlight">15ms</span></div>
+                        <div className="win-output-line">[<span className="win-success">✓</span>] Uptime: <span className="win-highlight">99.9%</span></div>
+                        <br/>
+                        <div>
+                            <span className="win-prompt">PS C:\TG-WS-Proxy&gt;</span> 
+                            <motion.span 
+                                className="win-command"
+                                key={cmdIndex}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.5 }}
+                            >
+                                {commands[cmdIndex]}
+                            </motion.span>
+                            <span className="win-cursor"></span>
+                        </div>
+                    </div>
+                </motion.div>
+            );
+        }
+
+        // Widget Component with live updates
+        function Widget({ type, value, label }) {
+            const [count, setCount] = useState(value);
+
+            useEffect(() => {
+                if (type === 'users') {
+                    const interval = setInterval(() => {
+                        setCount(prev => {
+                            const change = Math.floor(Math.random() * 21) - 10;
+                            return Math.max(56, Math.min(326, prev + change));
+                        });
+                    }, 10000);
+                    return () => clearInterval(interval);
+                }
+            }, [type]);
+
+            return (
+                <motion.div 
+                    className="widget-card"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    transition={{ duration: 0.3 }}
+                >
+                    <div className="widget-header">
+                        <span className="header-label">{label}</span>
+                        {type === 'users' && <span className="pulse-dot"></span>}
+                    </div>
+                    <motion.div 
+                        className="big-value"
+                        key={count}
+                        initial={{ scale: 1.2, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        {count}
+                    </motion.div>
+                    <div className="widget-footer">Active Sessions • Updated every 10s</div>
+                </motion.div>
+            );
+        }
+
+        // Feature Card Component
+        function FeatureCard({ icon, title, description, delay }) {
+            return (
+                <motion.div 
+                    className="feature-card"
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay }}
+                    whileHover={{ 
+                        scale: 1.05, 
+                        rotateY: 5,
+                        boxShadow: "0 20px 60px rgba(212, 212, 216, 0.3)"
+                    }}
+                >
+                    <div className="card-icon" dangerouslySetInnerHTML={{ __html: icon }} />
+                    <h3>{title}</h3>
+                    <p>{description}</p>
+                </motion.div>
+            );
+        }
+
+        // Main App Component
+        function App() {
+            return (
+                <>
+                    {/* Background */}
+                    <div className="bg-animation">
+                        <div className="gradient-orb orb-1"></div>
+                        <div className="gradient-orb orb-2"></div>
+                        <div className="gradient-orb orb-3"></div>
+                    </div>
+
+                    {/* Header */}
+                    <motion.header 
+                        className="header"
+                        initial={{ y: -100 }}
+                        animate={{ y: 0 }}
+                        transition={{ duration: 0.6 }}
+                    >
+                        <nav className="nav container">
+                            <motion.div 
+                                className="logo"
+                                whileHover={{ scale: 1.1 }}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="32" height="32" className="logo-emoji">
+                                    <circle cx="256" cy="256" r="256" fill="#000000"/>
+                                    <path d="M 220 350 L 110 260 L 380 140 L 220 350 Z M 220 350 L 270 280" fill="#ffffff" stroke="#000000" strokeWidth="12" strokeLinejoin="round"/>
+                                </svg>
+                                <span className="logo-text">TG WS Proxy</span>
+                            </motion.div>
+                            <div className="nav-buttons">
+                                <motion.a 
+                                    href="#download" 
+                                    className="btn btn-primary"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                >
+                                    Скачать
+                                </motion.a>
+                            </div>
+                        </nav>
+                    </motion.header>
+
+                    {/* Hero */}
+                    <Hero />
+
+                    {/* Introduction */}
+                    <section className="introduction" id="features">
+                        <div className="container intro-grid">
+                            <motion.div 
+                                className="intro-image"
+                                initial={{ opacity: 0, x: -50 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.8 }}
+                            >
+                                <div className="widgets-container">
+                                    <Widget type="ping" value={48} label="LATENCY TO PROXY" />
+                                    <Widget type="users" value={147} label="ONLINE USERS" />
+                                </div>
+                            </motion.div>
+                            <motion.div 
+                                className="intro-content"
+                                initial={{ opacity: 0, x: 50 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.8 }}
+                            >
+                                <div className="section-badge">ВВЕДЕНИЕ</div>
+                                <h2 className="section-title">В ТГ ВСЕ ПРОСТО</h2>
+                                <p className="section-text">
+                                    Скачайте приложение, запустите его от администратора, и вуаля — 
+                                    вы уже в Telegram без ограничений. Никаких сложных настроек, 
+                                    никаких конфигурационных файлов. Просто работает.
+                                </p>
+                            </motion.div>
+                        </div>
+                    </section>
+
+                    {/* Features */}
+                    <section className="why-section" id="why-choose">
+                        <div className="container">
+                            <motion.div 
+                                className="section-header"
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                            >
+                                <div className="section-badge">ПРЕИМУЩЕСТВА</div>
+                                <h2 className="section-title">Почему выбирают нас</h2>
+                            </motion.div>
+
+                            <div className="features-grid">
+                                <FeatureCard
+                                    delay={0}
+                                    icon='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="48" height="48"><polygon points="375,31 205,31 95,275 212,275 150,481 420,181 303,181" fill="currentColor"/></svg>'
+                                    title="Молниеносная Скорость"
+                                    description="15ms задержка, нет потери пакетов. Ваш трафик летит на максимальной скорости."
+                                />
+                                <FeatureCard
+                                    delay={0.1}
+                                    icon='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="48" height="48"><path d="M256 32L80 112V240C80 368 256 480 256 480C256 480 432 368 432 240V112L256 32Z" fill="currentColor"/></svg>'
+                                    title="Полная Безопасность"
+                                    description="AES-256 шифрование, TLS 1.3, no-logs политика. Ваши данные в безопасности."
+                                />
+                                <FeatureCard
+                                    delay={0.2}
+                                    icon='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="48" height="48"><circle cx="256" cy="256" r="224" fill="none" stroke="currentColor" stroke-width="32"/></svg>'
+                                    title="Глобальная Сеть"
+                                    description="50+ серверов по всему миру. Автоматический выбор оптимального маршрута."
+                                />
+                                <FeatureCard
+                                    delay={0.3}
+                                    icon='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="48" height="48"><path d="M256 32C141 32 48 125 48 240C48 355 141 448 256 448C371 448 464 355 464 240C464 125 371 32 256 32Z" fill="currentColor"/></svg>'
+                                    title="99.9% Uptime"
+                                    description="Гарантированная доступность 24/7. Техподдержка всегда на связи."
+                                />
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Download */}
+                    <section className="download" id="download">
+                        <div className="container">
+                            <motion.div 
+                                className="section-header"
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                            >
+                                <div className="section-badge">ЗАГРУЗКА</div>
+                                <h2 className="section-title">Скачайте прокси для Telegram</h2>
+                            </motion.div>
+
+                            <div className="download-grid">
+                                <motion.div 
+                                    className="download-card"
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    whileHover={{ scale: 1.05, y: -10 }}
+                                >
+                                    <div className="download-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="48" height="48">
+                                            <rect x="60" y="60" width="392" height="340" rx="48" ry="48" fill="none" stroke="currentColor" strokeWidth="32"/>
+                                            <polyline points="256,240 256,400" stroke="currentColor" strokeWidth="32" strokeLinecap="round" fill="none"/>
+                                            <polyline points="180,320 256,400 332,320" stroke="currentColor" strokeWidth="32" strokeLinecap="round" fill="none"/>
+                                        </svg>
+                                    </div>
+                                    <h3>Windows 10/11</h3>
+                                    <p className="download-size">Размер: 52.2 МБ</p>
+                                    <motion.a 
+                                        href="https://github.com/tg-ws-proxy/tg-ws-proxy.github.io/releases/download/TgWsProxy/Tg-ws-proxy.exe" 
+                                        className="btn btn-premium btn-block"
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                    >
+                                        Скачать .exe
+                                    </motion.a>
+                                    <p className="download-info">Windows 10 и 11 (все версии)</p>
+                                </motion.div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Footer */}
+                    <footer className="footer">
+                        <div className="container">
+                            <div className="footer-content">
+                                <p>&copy; 2026 TG WS Proxy. Все права защищены.</p>
+                            </div>
+                        </div>
+                    </footer>
+                </>
+            );
+        }
+
+        // Render App
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+
+        // ==================== CUSTOM CURSOR TRAIL ====================
+        const cursorTrail = [];
+        const trailLength = 15;
+
+        for (let i = 0; i < trailLength; i++) {
+            const dot = document.createElement('div');
+            dot.style.cssText = `
+                position: fixed;
+                width: ${10 - i * 0.5}px;
+                height: ${10 - i * 0.5}px;
+                background: rgba(212, 212, 216, ${1 - i / trailLength});
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 9999;
+                transition: all 0.1s ease;
+                box-shadow: 0 0 ${10 - i}px rgba(212, 212, 216, 0.5);
+            `;
+            document.body.appendChild(dot);
+            cursorTrail.push(dot);
+        }
+
+        let mouseX = 0, mouseY = 0;
+        const positions = Array(trailLength).fill({ x: 0, y: 0 });
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animateCursor() {
+            positions.unshift({ x: mouseX, y: mouseY });
+            positions.pop();
+
+            cursorTrail.forEach((dot, i) => {
+                dot.style.left = `${positions[i].x}px`;
+                dot.style.top = `${positions[i].y}px`;
+            });
+
+            requestAnimationFrame(animateCursor);
+        }
+
+        animateCursor();
+
+        // ==================== PARALLAX MOUSE EFFECT ====================
+        const heroSection = document.querySelector('.hero');
+        
+        document.addEventListener('mousemove', (e) => {
+            if (!heroSection) return;
+            
+            const { clientX, clientY } = e;
+            const { innerWidth, innerHeight } = window;
+            
+            const xPercent = (clientX / innerWidth - 0.5) * 2;
+            const yPercent = (clientY / innerHeight - 0.5) * 2;
+            
+            const heroContent = document.querySelector('.hero-content');
+            const heroVisual = document.querySelector('.hero-visual');
+            
+            if (heroContent) {
+                heroContent.style.transform = `translate(${xPercent * 20}px, ${yPercent * 20}px)`;
+            }
+            
+            if (heroVisual) {
+                heroVisual.style.transform = `translate(${xPercent * -30}px, ${yPercent * -30}px)`;
+            }
+            
+            // Orbs parallax
+            const orbs = document.querySelectorAll('.gradient-orb');
+            orbs.forEach((orb, i) => {
+                const speed = (i + 1) * 15;
+                orb.style.transform = `translate(${xPercent * speed}px, ${yPercent * speed}px)`;
+            });
+        });
+
+        // ==================== SCROLL REVEAL ANIMATIONS ====================
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0) scale(1)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all sections
+        setTimeout(() => {
+            document.querySelectorAll('.introduction, .why-section, .download').forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(50px) scale(0.95)';
+                section.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+                observer.observe(section);
+            });
+        }, 100);
+
+        // ==================== INTERACTIVE TERMINAL ====================
+        setTimeout(() => {
+            const terminal = document.querySelector('.win-terminal-body');
+            if (terminal) {
+                terminal.addEventListener('mouseenter', () => {
+                    terminal.style.boxShadow = '0 0 30px rgba(212, 212, 216, 0.3)';
+                });
+                terminal.addEventListener('mouseleave', () => {
+                    terminal.style.boxShadow = 'none';
+                });
+            }
+        }, 1000);
+
+        // ==================== CLICK PARTICLE BURST ====================
+        document.addEventListener('click', (e) => {
+            const particleCount = 12;
+            const colors = ['#E4E4E7', '#D4D4D8', '#A1A1AA', '#FFFFFF'];
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                const angle = (Math.PI * 2 * i) / particleCount;
+                const velocity = 2 + Math.random() * 2;
+                const size = 4 + Math.random() * 4;
+                
+                particle.style.cssText = `
+                    position: fixed;
+                    left: ${e.clientX}px;
+                    top: ${e.clientY}px;
+                    width: ${size}px;
+                    height: ${size}px;
+                    background: ${colors[Math.floor(Math.random() * colors.length)]};
+                    border-radius: 50%;
+                    pointer-events: none;
+                    z-index: 9998;
+                    box-shadow: 0 0 10px rgba(212, 212, 216, 0.8);
+                `;
+                
+                document.body.appendChild(particle);
+                
+                let x = e.clientX;
+                let y = e.clientY;
+                let vx = Math.cos(angle) * velocity;
+                let vy = Math.sin(angle) * velocity;
+                let life = 100;
+                
+                function animateParticle() {
+                    x += vx;
+                    y += vy;
+                    vy += 0.1; // gravity
+                    life -= 2;
+                    
+                    particle.style.left = `${x}px`;
+                    particle.style.top = `${y}px`;
+                    particle.style.opacity = life / 100;
+                    particle.style.transform = `scale(${life / 100})`;
+                    
+                    if (life > 0) {
+                        requestAnimationFrame(animateParticle);
+                    } else {
+                        particle.remove();
+                    }
+                }
+                
+                animateParticle();
+            }
+        });
+    </script>
+</body>
+</html>
